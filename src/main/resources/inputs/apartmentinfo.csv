@@ -1,0 +1,40 @@
+Ground,001,Thenappan,Tenant,Ved,1310
+Ground,002,Balaji,Owner,NA,1030
+Ground,003,Lokesh,Tenant,Chiranjeev,1080
+Ground,004,Raj,Owner,NA,1330
+Ground,005,Jeevan,Owner,NA,1160
+Ground,006,Vikash,Owner,NA,990
+Ground,007,Raveendra,Owner,NA,990
+Ground,008,Johnson,Tenant,NA,1240
+First,101,Sivasubramanian,Tenant,Hari,1310
+First,102,Ankit,None,NA,1030
+First,103,Naveen,Owner,NA,1080
+First,104,Dix,Tenant,Clinton,1330
+First,105,Francis,Owner,NA,1160
+First,106,Chinna,Owner,NA,990
+First,107,Srinivas,Owner,NA,990
+First,108,Kiran,Owner,NA,1240
+Second,201,Dinesh,Owner,NA,1310
+Second,202,Arunkumar,Owner,NA,1030
+Second,203,Poornima,Tenant,Ravi,1080
+Second,204,Anil,Owner,NA,1330
+Second,205,Omer,Tenant,Sunny,1160
+Second,206,Ipsita,Owner,NA,990
+Second,207,Jawahar,Owner,NA,990
+Second,208,Shivananda,Owner,NA,1240
+Third,301,Satish Reddy,Owner,NA,1310
+Third,302,Sharath,Owner,NA,1030
+Third,303,Surendra Reddy,Tenant,Ilayaraja,1080
+Third,304,Arpit,Owner,NA,1330
+Third,305,Gopinath,Owner,NA,1160
+Third,306,Asha,Owner,NA,990
+Third,307,Ragul,Owner,NA,990
+Third,308,Kumaran,Owner,NA,1240
+Fourth,401,Johnson,Tenant,Rafiq,1310
+Fourth,402,Janarthan,Tenant,Sunil,1030
+Fourth,403,Sudhakar,Tenant,Raghavendra,1080
+Fourth,404,Sumithra,Owner,NA,1330
+Fourth,405,Basavaraj,Tenant,Sunu Simon,1160
+Fourth,406,Chaitra,Tenant,Sharnesh,990
+Fourth,407,Chaitra,Tenant,Imtyaz,990
+Fourth,408,Johnson,Tenant,Yusuf,1240
