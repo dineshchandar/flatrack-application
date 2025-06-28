@@ -1,0 +1,15 @@
+meta {
+  name: loadwaterconsumption
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/web/v1/waterconsumption/load
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(..\flatrack-application\src\main\resources\inputs\Consumption Report September-2024.xlsx)
+}

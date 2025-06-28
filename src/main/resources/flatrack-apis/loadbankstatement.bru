@@ -1,0 +1,15 @@
+meta {
+  name: loadbankstatement
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/web/v1/bankstatement/load
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(..\flatrack-application\src\main\resources\inputs\September 2024.csv)
+}

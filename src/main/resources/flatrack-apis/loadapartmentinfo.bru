@@ -1,0 +1,15 @@
+meta {
+  name: loadapartmentinfo
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/web/v1/apartment/load
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(..\flatrack-application\src\main\resources\inputs\apartmentinfo.csv)
+}
