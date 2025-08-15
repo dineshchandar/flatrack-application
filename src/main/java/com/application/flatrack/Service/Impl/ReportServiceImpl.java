@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -17,6 +19,11 @@ public class ReportServiceImpl implements ReportService {
         System.out.println("Generating Monthly Report");
 
         String basePath = "D:\\dev\\flatrack-application\\src\\main\\resources\\output\\";
+
+        // Add date and time to the file name
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String dateTime = LocalDateTime.now().format(formatter);
+        String fileName = "Monthly_Report" + "_" + dateTime + ".xlsx";
 
         String[] columns = {
                 "Floor", "Flat Number", "Owner Name", "Current Resident Name", "Occupied By",
@@ -70,11 +77,11 @@ public class ReportServiceImpl implements ReportService {
             }
 
             // Write the output to a file
-            try (FileOutputStream fileOut = new FileOutputStream(basePath+"Monthly_Report.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream(basePath + fileName)) {
                 workbook.write(fileOut);
             }
 
-            System.out.println("Monthly_Report.xlsx generated successfully!");
+            System.out.println(fileName + " generated successfully!");
 
         } catch (IOException e) {
             e.printStackTrace();
