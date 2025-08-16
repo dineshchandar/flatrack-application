@@ -1,8 +1,11 @@
 package com.application.flatrack.Service.Impl;
 
-import com.application.flatrack.Model.Apartment;
-import com.application.flatrack.Model.MaintenanceRecord;
+import com.application.flatrack.Model.Dbo.Apartment;
+import com.application.flatrack.Model.Dbo.MaintenanceRecord;
+import com.application.flatrack.Model.Dbo.WaterConsumptionRecord;
 import com.application.flatrack.Repsository.ApartmentRepository;
+import com.application.flatrack.Repsository.MaintenanceRepository;
+import com.application.flatrack.Requests.MonthlyReportRequest;
 import com.application.flatrack.Service.ReportService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,10 +15,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -24,39 +29,63 @@ public class ReportServiceImpl implements ReportService {
     ApartmentRepository apartmentRepository;
 
     @Autowired
+    WaterConsumptionServiceImpl waterConsumptionService;
+
+    @Autowired
+    MaintenanceRepository maintenanceRepository;
+
+    @Autowired
     private Environment environment;
 
 
     @Override
-    public void monthlyReport() {
+    public void monthlyReport(MonthlyReportRequest request) {
         System.out.println("Generating Monthly Report");
 
-                List<MaintenanceRecord> maintenanceRecords = getMaintenanceRecords();
+        LocalDate reportDate = LocalDate.of(request.getReportYear(), request.getReportMonth(), 1);
+
+        List<MaintenanceRecord> maintenanceRecords = buildMaintenanceRecords(reportDate);
+
+        maintenanceRepository.saveAll(maintenanceRecords);
 
         buildReport(maintenanceRecords);
     }
 
-    private List<MaintenanceRecord> getMaintenanceRecords() {
+    private List<MaintenanceRecord> buildMaintenanceRecords(LocalDate reportDate) {
         List<MaintenanceRecord> maintenanceRecords = new ArrayList<>();
 
+        List<WaterConsumptionRecord> monthlyWaterConsumptionRecords = waterConsumptionService.monthlyWaterReport(reportDate);
         apartmentRepository.findAll().forEach(apartment -> {
+
+            Double standardMaintenanceAmount = calculateStdMaintenance(apartment);
+            Optional<WaterConsumptionRecord> waterRecord = monthlyWaterConsumptionRecords
+                    .stream()
+                    .filter(record -> record.getApartment().equalsIgnoreCase(apartment.getFlatNo()))
+                    .findFirst();
+            Double waterConsumption = waterRecord.map(WaterConsumptionRecord::getReadingValue).orElse(0.0);
+            Double waterCharges = waterConsumption * 0.5;
+            Double waterMeterRent = 150.0; // Standard water meter rent
+            Double maintenancePayable = standardMaintenanceAmount + waterMeterRent + waterCharges;
+            Double dues = 1000.0 - 200; // Example dues adjustment, previous month maintenance - maintenance paid
+            Double totalPayable = maintenancePayable + dues;
+
             MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
+            maintenanceRecord.setReportDate(reportDate);
             maintenanceRecord.setFlatNo(apartment.getFlatNo());
             maintenanceRecord.setFloor(apartment.getFloor());
             maintenanceRecord.setOwnerName(apartment.getOwnerName());
             maintenanceRecord.setOccupiedBy(MaintenanceRecord.OccupiedBy.Owner);
             maintenanceRecord.setTenantName(apartment.getTenantName());
             maintenanceRecord.setAreaInSqft(apartment.getAreaInSqft());
+            maintenanceRecord.setStandardMaintenanceAmount(standardMaintenanceAmount);
             maintenanceRecord.setMaintenanceDate(LocalDateTime.now().toLocalDate());
-            maintenanceRecord.setStandardMaintenanceAmount(calculateStdMaintenance(apartment));
-            maintenanceRecord.setWaterMeterRent(150.0);
-            maintenanceRecord.setWaterConsumption(25.0);
-            maintenanceRecord.setWaterCharges(50.0);
-            maintenanceRecord.setMaintenancePayable(1000.0);
-            maintenanceRecord.setPaidLastMonth(2000.0);
-            maintenanceRecord.setDuesAdjustments(0.0);
-            maintenanceRecord.setTotalPayable(2150.0);
-            maintenanceRecord.setComments("No comments");
+            maintenanceRecord.setWaterMeterRent(waterMeterRent);
+            maintenanceRecord.setWaterConsumption(waterConsumption);
+            maintenanceRecord.setWaterCharges(waterCharges);
+            maintenanceRecord.setMaintenancePayable(maintenancePayable);
+            maintenanceRecord.setDuesAdjustments(dues);
+            maintenanceRecord.setTotalPayable(totalPayable);
+            maintenanceRecord.setStatus("Pending");
             maintenanceRecords.add(maintenanceRecord);
         });
         return maintenanceRecords;
@@ -107,7 +136,6 @@ public class ReportServiceImpl implements ReportService {
                 row.createCell(8).setCellValue(maintenanceRecord.getWaterConsumption());
                 row.createCell(9).setCellValue(maintenanceRecord.getWaterCharges());
                 row.createCell(10).setCellValue(maintenanceRecord.getMaintenancePayable());
-                row.createCell(11).setCellValue(maintenanceRecord.getPaidLastMonth());
                 row.createCell(12).setCellValue(maintenanceRecord.getDuesAdjustments());
                 row.createCell(13).setCellValue(maintenanceRecord.getTotalPayable());
                 row.createCell(14).setCellValue(maintenanceRecord.getComments());

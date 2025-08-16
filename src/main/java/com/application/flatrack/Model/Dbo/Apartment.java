@@ -1,4 +1,4 @@
-package com.application.flatrack.Model;
+package com.application.flatrack.Model.Dbo;
 
 import jakarta.persistence.*;
 

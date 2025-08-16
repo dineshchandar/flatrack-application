@@ -1,6 +1,6 @@
 package com.application.flatrack.Service.Impl;
 
-import com.application.flatrack.Model.BankStatementRecord;
+import com.application.flatrack.Model.Dbo.BankStatementRecord;
 import com.application.flatrack.Repsository.BankStatementRepository;
 import com.application.flatrack.Service.BankStatementService;
 import org.apache.commons.csv.CSVFormat;
