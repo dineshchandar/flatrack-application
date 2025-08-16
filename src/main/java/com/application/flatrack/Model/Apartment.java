@@ -79,4 +79,16 @@ public class Apartment {
     public enum OccupiedBy {
         Owner, Tenant, None
     }
+
+    @Override
+    public String toString() {
+        return "Apartment{" +
+                "flatNo='" + flatNo + '\'' +
+                ", floor='" + floor + '\'' +
+                ", ownerName='" + ownerName + '\'' +
+                ", occupiedBy=" + occupiedBy +
+                ", tenantName='" + tenantName + '\'' +
+                ", areaInSqft=" + areaInSqft +
+                '}';
+    }
 }

@@ -35,6 +35,33 @@ public class MaintenanceRecord {
     @Column(name = "maintenance_date")
     private LocalDate maintenanceDate;
 
+    @Column(name = "standard_maintenance_amount")
+    private Double standardMaintenanceAmount;
+
+    @Column(name = "water_meter_rent")
+    private Double waterMeterRent;
+
+    @Column(name = "water_consumption")
+    private Double waterConsumption;
+
+    @Column(name = "water_charges")
+    private Double waterCharges;
+
+    @Column(name = "maintenance_payable")
+    private Double maintenancePayable;
+
+    @Column(name = "paid_last_month")
+    private Double paidLastMonth;
+
+    @Column(name = "dues_adjustments")
+    private Double duesAdjustments;
+
+    @Column(name = "total_payable")
+    private Double totalPayable;
+
+    @Column(name = "comments", length = 500)
+    private String comments;
+
     // --- Enum for Occupied By ---
     public enum OccupiedBy {
         Owner, Tenant
@@ -102,5 +129,77 @@ public class MaintenanceRecord {
 
     public void setReportDate(LocalDate reportDate) {
         this.reportDate = reportDate;
+    }
+
+    public Double getStandardMaintenanceAmount() {
+        return standardMaintenanceAmount;
+    }
+
+    public void setStandardMaintenanceAmount(Double standardMaintenanceAmount) {
+        this.standardMaintenanceAmount = standardMaintenanceAmount;
+    }
+
+    public Double getWaterMeterRent() {
+        return waterMeterRent;
+    }
+
+    public void setWaterMeterRent(Double waterMeterRent) {
+        this.waterMeterRent = waterMeterRent;
+    }
+
+    public Double getWaterConsumption() {
+        return waterConsumption;
+    }
+
+    public void setWaterConsumption(Double waterConsumption) {
+        this.waterConsumption = waterConsumption;
+    }
+
+    public Double getWaterCharges() {
+        return waterCharges;
+    }
+
+    public void setWaterCharges(Double waterCharges) {
+        this.waterCharges = waterCharges;
+    }
+
+    public Double getMaintenancePayable() {
+        return maintenancePayable;
+    }
+
+    public void setMaintenancePayable(Double maintenancePayable) {
+        this.maintenancePayable = maintenancePayable;
+    }
+
+    public Double getPaidLastMonth() {
+        return paidLastMonth;
+    }
+
+    public void setPaidLastMonth(Double paidLastMonth) {
+        this.paidLastMonth = paidLastMonth;
+    }
+
+    public Double getDuesAdjustments() {
+        return duesAdjustments;
+    }
+
+    public void setDuesAdjustments(Double duesAdjustments) {
+        this.duesAdjustments = duesAdjustments;
+    }
+
+    public Double getTotalPayable() {
+        return totalPayable;
+    }
+
+    public void setTotalPayable(Double totalPayable) {
+        this.totalPayable = totalPayable;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

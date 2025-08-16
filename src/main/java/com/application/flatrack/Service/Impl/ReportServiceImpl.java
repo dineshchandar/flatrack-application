@@ -1,36 +1,66 @@
 package com.application.flatrack.Service.Impl;
 
+import com.application.flatrack.Model.Apartment;
+import com.application.flatrack.Model.MaintenanceRecord;
+import com.application.flatrack.Repsository.ApartmentRepository;
 import com.application.flatrack.Service.ReportService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReportServiceImpl implements ReportService {
+
+    @Autowired
+    ApartmentRepository apartmentRepository;
 
 
     @Override
     public void monthlyReport() {
         System.out.println("Generating Monthly Report");
 
-        String basePath = "D:\\dev\\flatrack-application\\src\\main\\resources\\output\\";
+                List<MaintenanceRecord> maintenanceRecords = getMaintenanceRecords();
 
-        // Add date and time to the file name
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String dateTime = LocalDateTime.now().format(formatter);
-        String fileName = "Monthly_Report" + "_" + dateTime + ".xlsx";
+        buildReport(maintenanceRecords);
+    }
 
-        String[] columns = {
-                "Floor", "Flat Number", "Owner Name", "Current Resident Name", "Occupied By",
-                "Area", "Standard Maintenance Amount", "Water Meter Rent (Standard)",
-                "Water Consumption", "Water Charges", "Maintenance Payable",
-                "Paid Last Month", "Dues/Adjustments", "Total Payable", "Comments"
-        };
+    private List<MaintenanceRecord> getMaintenanceRecords() {
+        List<MaintenanceRecord> maintenanceRecords = new ArrayList<>();
+
+        apartmentRepository.findAll().forEach(apartment -> {
+            MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
+            maintenanceRecord.setFlatNo(apartment.getFlatNo());
+            maintenanceRecord.setFloor(apartment.getFloor());
+            maintenanceRecord.setOwnerName(apartment.getOwnerName());
+            maintenanceRecord.setOccupiedBy(MaintenanceRecord.OccupiedBy.Owner);
+            maintenanceRecord.setTenantName(apartment.getTenantName());
+            maintenanceRecord.setAreaInSqft(apartment.getAreaInSqft());
+            maintenanceRecord.setMaintenanceDate(LocalDateTime.now().toLocalDate());
+            maintenanceRecord.setStandardMaintenanceAmount(2000.0);
+            maintenanceRecord.setWaterMeterRent(150.0);
+            maintenanceRecord.setWaterConsumption(25.0);
+            maintenanceRecord.setWaterCharges(50.0);
+            maintenanceRecord.setMaintenancePayable(1000.0);
+            maintenanceRecord.setPaidLastMonth(2000.0);
+            maintenanceRecord.setDuesAdjustments(0.0);
+            maintenanceRecord.setTotalPayable(2150.0);
+            maintenanceRecord.setComments("No comments");
+            maintenanceRecords.add(maintenanceRecord);
+        });
+        return maintenanceRecords;
+    }
+
+    private static void buildReport(List<MaintenanceRecord> maintenanceRecords) {
+
+        String[] columns = buildHeader();
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Monthly Report");
@@ -49,42 +79,59 @@ public class ReportServiceImpl implements ReportService {
                 cell.setCellStyle(headerStyle);
             }
 
-            // (Optional) Add sample data for now
-            Object[][] sampleData = {
-                    {"Ground", "001", "Thenappan", "Ved", "Tenant", 1310, 2000, 150,
-                            25, 50, 2150, 2000, 0, 2150, "No comments"},
-                    {"Ground", "002", "Balaji", "Balaji", "Owner", 1030, 2000, 150,
-                            18, 36, 2136, 2000, 0, 2136, ""}
-            };
-
             int rowNum = 1;
-            for (Object[] rowData : sampleData) {
+            for (MaintenanceRecord maintenanceRecord : maintenanceRecords) {
                 Row row = sheet.createRow(rowNum++);
-                for (int col = 0; col < rowData.length; col++) {
-                    if (rowData[col] instanceof String) {
-                        row.createCell(col).setCellValue((String) rowData[col]);
-                    } else if (rowData[col] instanceof Integer) {
-                        row.createCell(col).setCellValue((Integer) rowData[col]);
-                    } else if (rowData[col] instanceof Double) {
-                        row.createCell(col).setCellValue((Double) rowData[col]);
-                    }
-                }
+
+                row.createCell(0).setCellValue(maintenanceRecord.getFloor());
+                row.createCell(1).setCellValue(maintenanceRecord.getFlatNo());
+                row.createCell(2).setCellValue(maintenanceRecord.getOwnerName());
+                row.createCell(3).setCellValue(maintenanceRecord.getTenantName() != null ?
+                    maintenanceRecord.getTenantName() : maintenanceRecord.getOwnerName());
+                row.createCell(4).setCellValue(maintenanceRecord.getOccupiedBy().toString());
+                row.createCell(5).setCellValue(maintenanceRecord.getAreaInSqft());
+                row.createCell(6).setCellValue(maintenanceRecord.getStandardMaintenanceAmount());
+                row.createCell(7).setCellValue(maintenanceRecord.getWaterMeterRent());
+                row.createCell(8).setCellValue(maintenanceRecord.getWaterConsumption());
+                row.createCell(9).setCellValue(maintenanceRecord.getWaterCharges());
+                row.createCell(10).setCellValue(maintenanceRecord.getMaintenancePayable());
+                row.createCell(11).setCellValue(maintenanceRecord.getPaidLastMonth());
+                row.createCell(12).setCellValue(maintenanceRecord.getDuesAdjustments());
+                row.createCell(13).setCellValue(maintenanceRecord.getTotalPayable());
+                row.createCell(14).setCellValue(maintenanceRecord.getComments());
             }
+
 
             // Auto-size all columns
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            // Write the output to a file
-            try (FileOutputStream fileOut = new FileOutputStream(basePath + fileName)) {
+
+            try (FileOutputStream fileOut = new FileOutputStream(buildFileName())) {
                 workbook.write(fileOut);
             }
-
-            System.out.println(fileName + " generated successfully!");
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String[] buildHeader() {
+        String[] columns = {
+                "Floor", "Flat Number", "Owner Name", "Current Resident Name", "Occupied By",
+                "Area", "Standard Maintenance Amount", "Water Meter Rent (Standard)",
+                "Water Consumption", "Water Charges", "Maintenance Payable",
+                "Paid Last Month", "Dues/Adjustments", "Total Payable", "Comments"
+        };
+        return columns;
+    }
+
+    private static String buildFileName() {
+        String basePath = "D:\\dev\\flatrack-application\\src\\main\\resources\\output\\";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String dateTime = LocalDateTime.now().format(formatter);
+        System.out.println("Report will be saved at: " + basePath + "Monthly_Report_" + dateTime + ".xlsx");
+        return basePath + "Monthly_Report_" + dateTime + ".xlsx";
     }
 }
