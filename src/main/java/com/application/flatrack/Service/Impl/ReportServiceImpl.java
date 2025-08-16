@@ -7,6 +7,7 @@ import com.application.flatrack.Service.ReportService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -21,6 +22,9 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     ApartmentRepository apartmentRepository;
+
+    @Autowired
+    private Environment environment;
 
 
     @Override
@@ -44,7 +48,7 @@ public class ReportServiceImpl implements ReportService {
             maintenanceRecord.setTenantName(apartment.getTenantName());
             maintenanceRecord.setAreaInSqft(apartment.getAreaInSqft());
             maintenanceRecord.setMaintenanceDate(LocalDateTime.now().toLocalDate());
-            maintenanceRecord.setStandardMaintenanceAmount(2000.0);
+            maintenanceRecord.setStandardMaintenanceAmount(calculateStdMaintenance(apartment));
             maintenanceRecord.setWaterMeterRent(150.0);
             maintenanceRecord.setWaterConsumption(25.0);
             maintenanceRecord.setWaterCharges(50.0);
@@ -56,6 +60,14 @@ public class ReportServiceImpl implements ReportService {
             maintenanceRecords.add(maintenanceRecord);
         });
         return maintenanceRecords;
+    }
+
+    private Double calculateStdMaintenance(Apartment apartment) {
+        String maintenanceFeeFlag = environment.getProperty("maintenance-fee-flag");
+        if ("PER SQFT".equals(maintenanceFeeFlag)) {
+            return apartment.getAreaInSqft() * 2.0; // Rs. 2 per sqft
+        }
+        return 2000.0; // Fixed amount
     }
 
     private static void buildReport(List<MaintenanceRecord> maintenanceRecords) {
