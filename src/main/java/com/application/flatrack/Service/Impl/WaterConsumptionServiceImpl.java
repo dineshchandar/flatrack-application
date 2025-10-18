@@ -1,24 +1,21 @@
 package com.application.flatrack.Service.Impl;
 
-import com.application.flatrack.Model.WaterConsumptionRecord;
-import com.application.flatrack.Repsository.BankStatementRepository;
+import com.application.flatrack.Model.Dbo.WaterConsumptionRecord;
 import com.application.flatrack.Repsository.WaterConsumptionRepository;
 import com.application.flatrack.Service.WaterConsumptionService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class WaterConsumptionServiceImpl implements WaterConsumptionService {
@@ -84,7 +81,7 @@ public class WaterConsumptionServiceImpl implements WaterConsumptionService {
                     waterConsumptionRecord.setLocation(location);
                     waterConsumptionRecord.setMeterNo(meterNo);
                     waterConsumptionRecord.setReadingDate(readingDate);
-                    waterConsumptionRecord.setReadingValue(BigDecimal.valueOf(reading));
+                    waterConsumptionRecord.setReadingValue(reading);
                     waterConsumptionRecords.add(waterConsumptionRecord);
                 }
             }
@@ -94,6 +91,16 @@ public class WaterConsumptionServiceImpl implements WaterConsumptionService {
             e.printStackTrace();
             throw new RuntimeException("Failed to load Excel file: " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<WaterConsumptionRecord> monthlyWaterReport(LocalDate reportDate) {
+
+        List<WaterConsumptionRecord> waterConsumptionRecords = waterConsumptionRepository.getMonthlyConsumption(reportDate).stream()
+                .filter(record -> record.getLocation() == null)
+                .collect(Collectors.toList());
+
+        return waterConsumptionRecords;
     }
 
     private String getCellValue(Cell cell) {
@@ -138,7 +145,6 @@ public class WaterConsumptionServiceImpl implements WaterConsumptionService {
         };
     }
 
-
     public LocalDate convertToDate(String input) {
         if (input == null || input.isBlank()) {
             throw new IllegalArgumentException("Invalid date string: " + input);
@@ -156,5 +162,6 @@ public class WaterConsumptionServiceImpl implements WaterConsumptionService {
 
         return LocalDate.parse(dateStr, formatter);
     }
-}
 
+
+}

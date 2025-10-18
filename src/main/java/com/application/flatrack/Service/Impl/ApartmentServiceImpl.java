@@ -1,6 +1,6 @@
 package com.application.flatrack.Service.Impl;
 
-import com.application.flatrack.Model.Apartment;
+import com.application.flatrack.Model.Dbo.Apartment;
 import com.application.flatrack.Repsository.ApartmentRepository;
 import com.application.flatrack.Service.ApartmentService;
 import org.apache.commons.csv.CSVFormat;

@@ -1,6 +1,9 @@
 package com.application.flatrack.Service;
 
 
+import com.application.flatrack.Requests.MonthlyReportRequest;
+
 public interface ReportService {
-    void monthlyReport();
+    void monthlyReport(MonthlyReportRequest reportDate);
+    void monthlyReportFormatted(MonthlyReportRequest reportDate);
 }

@@ -41,7 +41,7 @@ CREATE TABLE maintenance_record (
     flat_no VARCHAR(10),
     floor VARCHAR(50),
     owner_name VARCHAR(100),
-    occupied_by ENUM('Owner', 'Tenant'),
+    occupied_by ENUM('Owner', 'Tenant'),owners
     tenant_name VARCHAR(100),
     area_in_sqft INT,
     report_date DATE,

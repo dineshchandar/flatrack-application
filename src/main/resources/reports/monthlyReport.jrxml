@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="MonthlyReport" pageWidth="842" pageHeight="595" orientation="Landscape"
+              columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- Define styles -->
+    <style name="headerStyle">
+        <box>
+            <pen lineWidth="0.5"/>
+        </box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[true]]></conditionExpression>
+            <style backcolor="#4A90E2" mode="Opaque">
+                <box>
+                    <pen lineWidth="0.5" lineColor="#000000"/>
+                </box>
+            </style>
+        </conditionalStyle>
+    </style>
+
+    <style name="alternateRow">
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+            <style backcolor="#F8F9FA" mode="Opaque"/>
+        </conditionalStyle>
+    </style>
+
+    <style name="moneyField">
+        <box>
+            <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+        </box>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$F{totalPayable} > 3000]]></conditionExpression>
+            <style forecolor="#CC0000"/>
+        </conditionalStyle>
+    </style>
+
+    <field name="floor" class="java.lang.String"/>
+    <field name="flatNo" class="java.lang.String"/>
+    <field name="ownerName" class="java.lang.String"/>
+    <field name="tenantName" class="java.lang.String"/>
+<!--    <field name="occupiedBy" class="java.lang.String"/>-->
+    <field name="areaInSqft" class="java.lang.Integer"/>
+    <field name="standardMaintenanceAmount" class="java.lang.Double"/>
+    <field name="waterMeterRent" class="java.lang.Double"/>
+    <field name="waterConsumption" class="java.lang.Double"/>
+    <field name="waterCharges" class="java.lang.Double"/>
+    <field name="maintenancePayable" class="java.lang.Double"/>
+    <field name="duesAdjustments" class="java.lang.Double"/>
+    <field name="totalPayable" class="java.lang.Double"/>
+    <field name="comments" class="java.lang.String"/>
+
+    <title>
+        <band height="70">
+            <rectangle>
+                <reportElement x="0" y="0" width="802" height="60" backcolor="#2C3E50" forecolor="#2C3E50"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="0" y="10" width="802" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="20" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Monthly Maintenance Report]]></text>
+            </staticText>
+            <textField pattern="MMMM yyyy">
+                <reportElement x="0" y="40" width="802" height="20" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center">
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement style="headerStyle" x="0" y="0" width="50" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Floor]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="50" y="0" width="70" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Flat No]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="120" y="0" width="100" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Owner Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="220" y="0" width="100" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Current Resident]]></text>
+            </staticText>
+<!--            <staticText>-->
+<!--                <reportElement x="320" y="0" width="70" height="30"/>-->
+<!--                <text><![CDATA[Occupied By]]></text>-->
+<!--            </staticText>-->
+            <staticText>
+                <reportElement style="headerStyle" x="390" y="0" width="60" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Area (sqft)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="450" y="0" width="70" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Std. Maint.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="520" y="0" width="50" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Water Rent]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="570" y="0" width="50" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Water Usage]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="620" y="0" width="60" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Water Charges]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="680" y="0" width="60" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Maint. Payable]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="headerStyle" x="740" y="0" width="62" height="30" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total Payable]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="20">
+            <rectangle>
+                <reportElement style="alternateRow" x="0" y="0" width="802" height="20"/>
+            </rectangle>
+            <textField>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{floor}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="50" y="0" width="70" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{flatNo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="120" y="0" width="100" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Left" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{ownerName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="220" y="0" width="100" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Left" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{tenantName} != null ? $F{tenantName} : $F{ownerName}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0">
+                <reportElement x="390" y="0" width="60" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{areaInSqft}]]></textFieldExpression>
+            </textField>
+            <textField pattern="₹ #,##0.00">
+                <reportElement style="moneyField" x="450" y="0" width="70" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{standardMaintenanceAmount}]]></textFieldExpression>
+            </textField>
+            <textField pattern="₹ #,##0.00">
+                <reportElement style="moneyField" x="520" y="0" width="50" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{waterMeterRent}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="570" y="0" width="50" height="20"/>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{waterConsumption}]]></textFieldExpression>
+            </textField>
+            <textField pattern="₹ #,##0.00">
+                <reportElement style="moneyField" x="620" y="0" width="60" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{waterCharges}]]></textFieldExpression>
+            </textField>
+            <textField pattern="₹ #,##0.00">
+                <reportElement style="moneyField" x="680" y="0" width="60" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{maintenancePayable}]]></textFieldExpression>
+            </textField>
+            <textField pattern="₹ #,##0.00">
+                <reportElement style="moneyField" x="740" y="0" width="62" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{totalPayable}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <summary>
+        <band height="40">
+            <rectangle>
+                <reportElement x="0" y="0" width="802" height="40" backcolor="#F8F9FA" forecolor="#F8F9FA"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="0" y="10" width="802" height="20" forecolor="#666666"/>
+                <textElement textAlignment="Center">
+                    <font isItalic="true" size="12"/>
+                </textElement>
+                <text><![CDATA[End of Report]]></text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>
