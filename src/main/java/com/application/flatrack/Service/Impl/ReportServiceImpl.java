@@ -11,16 +11,21 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -49,6 +54,36 @@ public class ReportServiceImpl implements ReportService {
         maintenanceRepository.saveAll(maintenanceRecords);
 
         buildReport(maintenanceRecords);
+    }
+
+    @Override
+    public void monthlyReportFormatted(MonthlyReportRequest request) {
+        System.out.println("Generating Monthly Report - Formatted");
+
+        LocalDate reportDate = LocalDate.of(request.getReportYear(), request.getReportMonth(), 1);
+        List<MaintenanceRecord> maintenanceRecords = buildMaintenanceRecords(reportDate);
+        maintenanceRepository.saveAll(maintenanceRecords);
+
+        try {
+            // Load the JRXML template
+            InputStream reportTemplate = new ClassPathResource("reports/monthlyReport.jrxml").getInputStream();
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportTemplate);
+
+            // Create the data source
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(maintenanceRecords);
+
+            // Fill the report
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+
+            // Generate the PDF file
+            String outputPath = buildFormattedFileName();
+            JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
+
+            System.out.println("PDF Report generated successfully at: " + outputPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to generate formatted report", e);
+        }
     }
 
     private List<MaintenanceRecord> buildMaintenanceRecords(LocalDate reportDate) {
@@ -173,5 +208,12 @@ public class ReportServiceImpl implements ReportService {
         String dateTime = LocalDateTime.now().format(formatter);
         System.out.println("Report will be saved at: " + basePath + "Monthly_Report_" + dateTime + ".xlsx");
         return basePath + "Monthly_Report_" + dateTime + ".xlsx";
+    }
+
+    private static String buildFormattedFileName() {
+        String basePath = "D:\\dev\\flatrack-application\\src\\main\\resources\\output\\";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String dateTime = LocalDateTime.now().format(formatter);
+        return basePath + "Monthly_Report_Formatted_" + dateTime + ".pdf";
     }
 }

@@ -23,4 +23,13 @@ public class ReportController {
         reportService.monthlyReport(request);
 
     }
+
+    @GetMapping("/monthlyformatted")
+    public void monthlyReportFormatted(@RequestBody MonthlyReportRequest request ) {
+
+        reportService.monthlyReportFormatted(request);
+
+    }
+
+
 }
